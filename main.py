@@ -137,9 +137,6 @@ class SimWorld(object):
         self.vehicle.setup_actor(self.map)
 
 
-        
-
-    
 
 def main():
     try:
