@@ -1,6 +1,6 @@
 from sensor import *
 
-class Detector(Sensor):
+class Advanced(Sensor):
     @abstractmethod
     def register_eventlistener(self, cb):
         pass
@@ -8,7 +8,7 @@ class Detector(Sensor):
     def __init__(self, parent_actor) -> None:
         super().__init__(parent_actor)
 
-class CollisionSensor(Detector):
+class CollisionSensor(Advanced):
     def __init__(self, parent_actor) -> None:
         super().__init__(parent_actor)
         self.history = []
@@ -23,7 +23,7 @@ class CollisionSensor(Detector):
         # carla.CollisionEvent
         self.sensor.listen(lambda evt: cb(evt))
 
-class LaneInvasionSensor(Detector):
+class LaneInvasionSensor(Advanced):
     def __init__(self, parent_actor) -> None:
         super().__init__(parent_actor)
         if parent_actor.type_id.startswith("vehicle."):
@@ -38,7 +38,7 @@ class LaneInvasionSensor(Detector):
         # @evt: carla.LaneInvasionEvent
         self.sensor.listen(lambda evt: cb(evt))
 
-class ObstacleDetectionSensor(Detector):
+class ObstacleDetectionSensor(Advanced):
     def __init__(self, parent_actor) -> None:
         super().__init__(parent_actor)
         self.remain_distance = 0.0
@@ -47,7 +47,7 @@ class ObstacleDetectionSensor(Detector):
     
     def get_blueprint(self, sensor_type='sensor.other.obstacle'):
         return super().get_blueprint(sensor_type)
-
+    
     def register_eventlistener(self, cb):
         # @evt: carla.ObstacleDetectionEvent
         self.sensor.listen(lambda evt: cb(evt))
@@ -66,3 +66,21 @@ class ObstacleDetectionSensor(Detector):
     def set_only_dynamics(self, only_dynamics=False):
         # If true, the trace will only consider dynamic objects.
         self.sensor.__setattr__('only_dynamics', only_dynamics)
+
+
+# TODO implement RssSensor
+
+class RssSensor(Advanced):
+    # this only support in Linux environment
+    # The RSS sensor uses world information, and a RSS library to 'make safety checks (safety calcuration)' on a vehicle
+    def __init__(self, parent_actor) -> None:
+        super().__init__(parent_actor)
+        self.blueprint = self.get_blueprint()
+        self.sensor = self.world.spawn_actor(self.blueprint, carla.Transform(), attach_to=self._parent_actor)
+    
+    def get_blueprint(self, sensor_type='sensor.other.rss'):
+        return super().get_blueprint(sensor_type)
+    
+    def register_eventlistener(self, cb):
+        # @evt: carla.RssResponse
+        self.sensor.listen(lambda evt: cb(evt))

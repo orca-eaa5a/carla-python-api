@@ -4,6 +4,7 @@ from sensor import *
 #############################################################################################
 
 class GnssSensor(Sensor):
+    # Global Navigation Satellite System (GPS)
     @staticmethod
     def callback(weakself, sensor_data):
         self = weakself()
@@ -179,7 +180,7 @@ class LidarSensor(Sensor):
 
 class RadarSensor(Sensor):
     # creates a conic view that is translated to a 2D point map of the elements in sight
-    # 시뮬레이션에서, 4D Point Cloud 생성을 목적으로 한다면, Radar보다 Lidar 센서를 사용
+    # 시뮬레이션에서, Surrond 4D Point Cloud 생성을 목적으로 한다면, Radar보다 Lidar 센서를 사용
     @staticmethod
     def get_points(sensor_data) -> List[carla.RadarDetection]:
         # carla.RadarDetection, which specifies their polar coordinates, distance and velocity.
@@ -187,6 +188,7 @@ class RadarSensor(Sensor):
         carla.RadarDetection
         @ altitude : Altitude angle in radians.
         @ azimuth : Azimuth angle in radians.
+
         @ depth : Distance in meters.
         @ velocity : Velocity towards the sensor.
         """
